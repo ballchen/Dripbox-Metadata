@@ -1,0 +1,21 @@
+{
+  "name": "dripbox-metadata",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "NODE_ENV=development node index",
+    "start": "NODE_ENV=production node index"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "koa": "^1.2.0",
+    "koa-bodyparser": "^2.0.1",
+    "koa-generic-session": "^1.10.2",
+    "koa-qs": "^2.0.0",
+    "koa-redis": "^2.0.1",
+    "koa-router": "^5.4.0",
+    "lodash": "^4.11.1"
+  }
+}
