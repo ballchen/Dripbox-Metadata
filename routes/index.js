@@ -2,7 +2,9 @@
 
 const router = require('koa-router')()
 
-router.user('/api', require('./api'));
+router.use(require('./common/error').middleware);
+
+router.use('/api', require('./api'));
 
 router.get('/', function *() {
   this.status = 200
