@@ -1,7 +1,11 @@
 exports.Version = {
   id: String,
-  hash: String,// (Hash the file using MD5)
-  author: String // (user's id)
+  checkSum: String, // (Hash the file using MD5)
+  author: String, // (user's id)
+  uploaded: {
+    type: Boolean,
+    default: false
+  },
   createdAt: Date,
   updatedAt: Date
 }

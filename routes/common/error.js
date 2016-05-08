@@ -31,6 +31,7 @@ const ERROR_CODE = exports.ERROR_CODE = {
   // 1200: Resource error
   userAlreadyExist: 1200,
   userNotFound: 1201,
+  versionNotExist: 1202,
 
   // 1300: Data error
   wrongPassword: 1300,

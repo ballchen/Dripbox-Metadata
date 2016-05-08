@@ -32,7 +32,8 @@ exports.register = function *() {
   }
 
   const data = _.merge(form, {
-    id: uuid.v4()
+    id: uuid.v4(),
+    checkSum: 'd41d8cd98f00b204e9800998ecf8427e'
   })
 
   data.password = passwordUtil.generatePassword(data.password)
@@ -84,4 +85,34 @@ exports.show = function *() {
 
   this.status = 200
   return render.call(this, user)
+}
+
+const registerDeviceSchema = Joi.object().keys({
+  macAddress: Joi.string().required()
+})
+
+exports.registerDevice = function *() {
+  const form = yield Joi.validateAsync(this.request.body, registerDeviceSchema)
+  const device = yield this.mongo.collection('device').findOne({
+    userId: this.session.user.id,
+    macAddress: form.macAddress
+  })
+
+  if (device) {
+    this.status = 200
+    return render.call(this, {
+      isNewDevice: false
+    })
+  }
+
+  yield this.mongo.collection('device').insert({
+    id: uuid.v4(),
+    userId: this.session.user.id,
+    macAddress: form.macAddress
+  })
+
+  this.status = 200
+  return render.call(this, {
+    isNewDevice: true
+  })
 }

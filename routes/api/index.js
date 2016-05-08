@@ -16,6 +16,12 @@ router.post('/me/checksum',
 router.get('/me/checksum',
   checkSession(),
   files.getCheckSum)
+router.post('/me/check_device',
+  checkSession(),
+  users.registerDevice)
+router.post('/file',
+  checkSession(),
+  files.createFile)
 
 // user auth
 router.post('/register', users.register)

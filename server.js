@@ -1,6 +1,7 @@
 'use strict'
 
 const koa = require('koa')
+const cors = require('kcors')
 const bodyParser = require('koa-bodyparser')
 const mongo = require('koa-mongo')
 const config = require('./config')
@@ -13,11 +14,10 @@ require('koa-qs')(app)
 app.env = process.env.NODE_ENV || 'development'
 
 app.keys = ['drip', 'dripdrip']
-
+app.use(cors());
 app.use(session({
   store: redisStore(config.redis)
 }))
-
 app.use(mongo(config.mongo))
 app.use(bodyParser())
 
