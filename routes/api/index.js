@@ -22,6 +22,9 @@ router.post('/me/check_device',
 router.post('/file',
   checkSession(),
   files.createFile)
+router.get('/file',
+  checkSession(),
+  files.showFiles)
 
 // user auth
 router.post('/register', users.register)

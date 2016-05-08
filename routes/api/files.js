@@ -5,6 +5,7 @@ const Joi = Promise.promisifyAll(require('joi'))
 const ERROR_CODE = require('../common/error').ERROR_CODE
 const render = require('../common/render')
 const uuid = require('uuid')
+const _ = require('lodash')
 
 const setCheckSumSchema = Joi.object().keys({
   checkSum: Joi.string().required()
@@ -100,4 +101,26 @@ exports.createFile = function *() {
   })
   this.status = 200
   return render.call(this, newNode)
+}
+exports.showFiles = function* () {
+  const userId = this.session.user.id
+  const nodes = yield this.mongo.collection('node').find({
+    type: 'file',
+    collaborator: userId,
+    deleted: false
+  }).toArray()
+
+  const versionIds = _.map(nodes, 'versionId');
+
+  const versions = yield this.mongo.collection('version').find({
+    id: {
+      $in: versionIds
+    }
+  }).toArray()
+
+  const result = _.merge(nodes, versions)
+
+  this.status = 200
+  return render.call(this, result)
+
 }
