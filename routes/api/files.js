@@ -99,10 +99,15 @@ exports.createFile = function *() {
     currentVersion: newVersion.id,
     deleted: false
   })
+
+  let result = {
+    version: newVersion,
+    node: newNode
+  }
   this.status = 200
-  return render.call(this, newNode)
+  return render.call(this, result)
 }
-exports.showFiles = function* () {
+exports.showFiles = function * () {
   const userId = this.session.user.id
   const nodes = yield this.mongo.collection('node').find({
     type: 'file',
@@ -110,7 +115,7 @@ exports.showFiles = function* () {
     deleted: false
   }).toArray()
 
-  const versionIds = _.map(nodes, 'versionId');
+  const versionIds = _.map(nodes, 'versionId')
 
   const versions = yield this.mongo.collection('version').find({
     id: {
@@ -123,4 +128,8 @@ exports.showFiles = function* () {
   this.status = 200
   return render.call(this, result)
 
+}
+
+exports.success = function *() {
+  
 }

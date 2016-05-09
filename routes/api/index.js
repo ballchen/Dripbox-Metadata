@@ -26,6 +26,10 @@ router.get('/file',
   checkSession(),
   files.showFiles)
 
+//temp api for data server
+router.post('/upload/success', 
+  files.success)
+
 // user auth
 router.post('/register', users.register)
 router.post('/login', users.login)
