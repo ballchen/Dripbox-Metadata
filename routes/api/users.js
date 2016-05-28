@@ -21,7 +21,7 @@ const loginSchema = Joi.object().keys({
 exports.register = function *() {
   const form = yield Joi.validateAsync(this.request.body, registerSchema)
 
-  let user = yield this.mongo.collection('user').findOne(form).sort()
+  let user = yield this.mongo.collection('user').findOne(form)
 
   if (user) {
     this.status = 400
