@@ -32,6 +32,8 @@ const ERROR_CODE = exports.ERROR_CODE = {
   userAlreadyExist: 1200,
   userNotFound: 1201,
   versionNotExist: 1202,
+  fileNotExist: 1203,
+  fileNotMatch: 1204
 
   // 1300: Data error
   wrongPassword: 1300,

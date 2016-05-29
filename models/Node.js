@@ -1,5 +1,6 @@
 exports.Node = {
   id: String,
+  nodeId: String,
   name: String,
   publicLevel: Number,
   collaborator: Array,

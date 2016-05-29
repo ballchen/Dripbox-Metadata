@@ -62,7 +62,7 @@ exports.createFile = function *() {
     const version = yield this.mongo.collection('version').findOne({
       id: node.currentVersion,
       checkSum: form.checkSum,
-      uploaded: true
+      uploaded: false
     })
 
     if (!version) {
@@ -81,22 +81,26 @@ exports.createFile = function *() {
   }
 
   // create brand new file
+  // 
+  const versionId = uuid.v4()
+  const nodeId = uuid.v4()
 
   const newVersion = yield this.mongo.collection('version').insert({
-    id: uuid.v4(),
+    id: versionId,
+    nodeId: nodeId,
     checkSum: form.checkSum,
     uploaded: false,
     author: userId
   })
 
   const newNode = yield this.mongo.collection('node').insert({
-    id: uuid.v4(),
+    id: nodeId,
     name: form.name,
     publicLevel: 0, // not public
     collaborator: [userId],
     author: userId,
     type: 'file',
-    currentVersion: newVersion.id,
+    currentVersion: versionId,
     deleted: false
   })
 
@@ -107,6 +111,65 @@ exports.createFile = function *() {
   this.status = 200
   return render.call(this, result)
 }
+
+const deleteFileSchema = Joi.object().keys({
+  id: Joi.string().required(),
+  name: Joi.string().require(),
+  checkSum: Joi.string().required()
+})
+
+exports.deleteFile = function *() {
+  const userId = this.session.user.id
+  const form = yield Joi.validateAsync(this.request.body, deleteFileSchema)
+
+  let node = yield this.mongo.collection('node').findOne({
+    id: form.id,
+    name: form.name,
+    type: 'file',
+    collaborator: userId,
+    deleted: false
+  })
+
+  if (!node) {
+    this.status = 404
+    return render.call(this, {
+      error: ERROR_CODE.fileNotExist,
+      message: 'file not exists'
+    })
+  }
+
+  let version = yield this.mongo.collection('version').findOne({
+    id: node.currentVersion
+  })
+
+  if (!version) {
+    this.status = 404
+    return render.call(this, {
+      error: ERROR_CODE.fileNotExist,
+      message: 'file not exists'
+    })
+  }
+
+  if (form.checkSum === version.checkSum) {
+    this.status = 404
+    return render.call(this, {
+      error: ERROR_CODE.fileNotMatch,
+      message: 'file not match'
+    })
+  }
+
+  let res = yield this.mongo.collection('node').update({
+    id: form.id
+  }, {
+    $set: {
+      deleted: true
+    }
+  })
+
+  this.status = 200
+  return render.call(this, res)
+}
+
 exports.showFiles = function * () {
   const userId = this.session.user.id
   const nodes = yield this.mongo.collection('node').find({
@@ -130,6 +193,4 @@ exports.showFiles = function * () {
 
 }
 
-exports.success = function *() {
-  
-}
+exports.success = function *() {}
