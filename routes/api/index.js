@@ -25,9 +25,12 @@ router.post('/file',
 router.get('/file',
   checkSession(),
   files.showFiles)
+router.post('/file/delete',
+  checkSession(),
+  files.deleteFile)
 
-//temp api for data server
-router.post('/upload/success', 
+// temp api for data server
+router.post('/upload/success',
   files.success)
 
 // user auth

@@ -70,7 +70,10 @@ exports.login = function *() {
     email: user.email
   }
 
-  this.status = 204
+  this.status = 200
+  render.call(this, {
+    checkSum: user.checkSum
+  })
 }
 
 exports.logout = function *() {

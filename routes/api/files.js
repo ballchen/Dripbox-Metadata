@@ -113,9 +113,8 @@ exports.createFile = function *() {
 }
 
 const deleteFileSchema = Joi.object().keys({
-  id: Joi.string().required(),
-  name: Joi.string().require(),
-  checkSum: Joi.string().required()
+  name: Joi.string().required()
+  // checkSum: Joi.string().required()
 })
 
 exports.deleteFile = function *() {
@@ -123,7 +122,6 @@ exports.deleteFile = function *() {
   const form = yield Joi.validateAsync(this.request.body, deleteFileSchema)
 
   let node = yield this.mongo.collection('node').findOne({
-    id: form.id,
     name: form.name,
     type: 'file',
     collaborator: userId,
@@ -150,16 +148,16 @@ exports.deleteFile = function *() {
     })
   }
 
-  if (form.checkSum === version.checkSum) {
-    this.status = 404
-    return render.call(this, {
-      error: ERROR_CODE.fileNotMatch,
-      message: 'file not match'
-    })
-  }
+  // if (form.checkSum === version.checkSum) {
+  //   this.status = 404
+  //   return render.call(this, {
+  //     error: ERROR_CODE.fileNotMatch,
+  //     message: 'file not match'
+  //   })
+  // }
 
   let res = yield this.mongo.collection('node').update({
-    id: form.id
+    id: node.id
   }, {
     $set: {
       deleted: true
