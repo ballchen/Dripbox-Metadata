@@ -6,10 +6,12 @@ const ERROR_CODE = require('../common/error').ERROR_CODE
 const render = require('../common/render')
 const uuid = require('uuid')
 const _ = require('lodash')
+let JobDetector = require('../../utils/polling').JobDetector
 
 const setCheckSumSchema = Joi.object().keys({
   checkSum: Joi.string().required()
 })
+
 
 exports.create = function *() {}
 
@@ -164,6 +166,14 @@ exports.deleteFile = function *() {
     }
   })
 
+
+  JobDetector.emit('message', {
+    action: 'delete',
+    file: _.assign(node, {
+      version: version
+    })
+  })
+
   this.status = 200
   return render.call(this, res)
 }
@@ -177,7 +187,7 @@ exports.showFiles = function * () {
   }).toArray()
 
   const versionIds = _.map(nodes, 'currentVersion')
-  console.log(versionIds);
+  console.log(versionIds)
 
   const versions = yield this.mongo.collection('version').find({
     id: {
@@ -185,14 +195,14 @@ exports.showFiles = function * () {
     }
   }).toArray()
 
-  nodes.forEach(function(n, idx) {
-    let index = _.findIndex(versions, {id: n.currentVersion});
-    if(index >= 0) {
-      n = _.assign(n, {version: versions[index]});
+  nodes.forEach(function (n, idx) {
+    let index = _.findIndex(versions, {id: n.currentVersion})
+    if (index >= 0) {
+      n = _.assign(n, {version: versions[index]})
     }
   })
 
-  let result = nodes;
+  let result = nodes
 
   this.status = 200
   return render.call(this, result)
@@ -204,6 +214,19 @@ exports.getTreeNodes = function * () {
   const nodes = yield this.mongo.collection('node').find({
   })
 
+}
+
+exports.polling = function *() {
+  let result
+  yield callback => {
+    JobDetector.once('message', function (data) {
+      result = data
+      callback();
+    })
+  }
+  this.status = 200
+  this.body = result
+  
 }
 
 exports.success = function *() {}

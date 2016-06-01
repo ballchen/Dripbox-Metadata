@@ -28,6 +28,8 @@ router.get('/file',
 router.post('/file/delete',
   checkSession(),
   files.deleteFile)
+router.get('/polling',
+  files.polling)
 
 // temp api for data server
 router.post('/upload/success',
