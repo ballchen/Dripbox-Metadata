@@ -114,7 +114,7 @@ exports.createFile = function *() {
 
 const deleteFileSchema = Joi.object().keys({
   name: Joi.string().required()
-  // checkSum: Joi.string().required()
+// checkSum: Joi.string().required()
 })
 
 exports.deleteFile = function *() {
@@ -176,7 +176,8 @@ exports.showFiles = function * () {
     deleted: false
   }).toArray()
 
-  const versionIds = _.map(nodes, 'versionId')
+  const versionIds = _.map(nodes, 'currentVersion')
+  console.log(versionIds);
 
   const versions = yield this.mongo.collection('version').find({
     id: {
@@ -184,10 +185,24 @@ exports.showFiles = function * () {
     }
   }).toArray()
 
-  const result = _.merge(nodes, versions)
+  nodes.forEach(function(n, idx) {
+    let index = _.findIndex(versions, {id: n.currentVersion});
+    if(index >= 0) {
+      n = _.assign(n, {version: versions[index]});
+    }
+  })
+
+  let result = nodes;
 
   this.status = 200
   return render.call(this, result)
+
+}
+
+exports.getTreeNodes = function * () {
+  const userId = this.session.user.id
+  const nodes = yield this.mongo.collection('node').find({
+  })
 
 }
 
